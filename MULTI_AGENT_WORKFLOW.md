@@ -1,6 +1,6 @@
 # Standard Operating Procedure: Multi-Agent Software Development Workflow
 
-**Document Version:** 4.0.0 (State-Aware Edition)  
+**Document Version:** 5.0.0 (Autonomous State Manager Edition)  
 **Target Agents:** Antigravity (Lead Architect & QA Orchestrator) & OpenCode / CLI Execution Agents  
 **Scope:** Reusable engineering manual for multi-agent software development across any project repository.
 
@@ -27,62 +27,66 @@ This **Multi-Agent Workflow** decouples high-level reasoning from low-level code
 
 ---
 
-## 3. Persistent Project State Layer 🧠
+## 3. Autonomous State Manager Architecture (Single Source of Truth) 🧠
 
-To ensure seamless resiliency across long-running projects, chat context resets, and new conversations, Antigravity maintains a persistent state structure in `.agent_state/` (or project root):
+In Version 5.0.0, **`project_state.md`** serves as the **Single Source of Truth (SSOT)** for project progress. Antigravity automatically persists state updates after every verified execution cycle.
 
+### Standard State Schema (`project_state.md`):
+```markdown
+# 🔄 Autonomous Project State
+**Project Name:** [PROJECT_NAME]
+**Active Mode:** [Mode 4 (Pre-Planned) / Mode 5 (Self-Correcting)]
+**Current Milestone:** [MILESTONE_NAME]
+**Current Cycle / Iteration:** [CYCLE_N / TOTAL]
+**Current Status:** [PLANNING / EXECUTING / REVIEWING / WAITING / COMPLETED]
+**Current Task:** [ACTIVE_TASK_NAME]
+**Last Completed Task:** [PREVIOUS_TASK_NAME]
+**Next Planned Task:** [NEXT_TASK_NAME]
+**Outstanding Critical Issues:** [COUNT / NONE]
+**Outstanding Recommended Issues:** [COUNT / NONE]
+**Git Branch:** [BRANCH_NAME]
+**Last Updated:** [TIMESTAMP_ISO]
 ```
-Project/
-├── MULTI_AGENT_WORKFLOW.md   (Standard Operating Procedure)
-├── implementation_plan.md    (Current roadmap & task breakdown)
-├── architecture.md           (System design & module boundaries)
-├── decisions.md              (Architectural Decision Records - ADRs)
-├── iteration_history.json    (Machine-readable execution & audit log)
-├── walkthrough.md            (Human-readable milestone summary)
-└── project_state.md          (Lean index: current milestone, active mode, last completed iteration)
-```
 
-### Purpose of Core State Files:
-- **`project_state.md` (Primary Index):** A lightweight (<30 lines) status file. Antigravity reads this FIRST upon session start to instantly reconstruct project context without reading full chat history.
-- **`implementation_plan.md`:** Current active roadmap and task decomposition.
-- **`architecture.md`:** Module relationships and interface contracts.
-- **`decisions.md`:** Important engineering decisions and trade-offs.
-- **`iteration_history.json`:** Chronological audit trail of all execution cycles, test pass rates, and review findings.
+### Complete State File Map:
+- **`project_state.md` (SSOT Index):** Lightweight status dashboard (<30 lines) read on session start.
+- **`implementation_plan.md`:** Detailed task roadmap and component decomposition.
+- **`architecture.md`:** System architecture, module boundaries, and interfaces.
+- **`decisions.md`:** Architectural Decision Records (ADRs).
+- **`iteration_history.json`:** Chronological machine-readable audit trail of execution outputs, test pass rates, and review findings.
+- **`walkthrough.md`:** Human-readable progress log with file links and verification diffs.
 
 ---
 
-## 4. Context Reconstruction Protocol
+## 4. Atomic State Write Protocol & Crash Recovery
 
-Before initiating ANY planning, execution, or review cycle, Antigravity must execute the **Context Reconstruction Protocol**:
+To prevent partial, corrupted, or stale state:
 
-```
-                       Session Start / New Chat
-                                   │
-                                   ▼
-                   1. Read project_state.md (Lean Index)
-                                   │
-                                   ▼
-                   2. Reconstruct Context & Active Mode
-                                   │
-                                   ▼
-                   3. Planning / Execution (Mode 4 or Mode 5)
-                                   │
-                                   ▼
-                   4. Code Generation via Desktop Bridge
-                                   │
-                                   ▼
-                   5. QA & Code Review Audit
-                                   │
-                                   ▼
-                   6. Update State Files (project_state.md, history)
-                                   │
-                                   ▼
-                   7. Continuous Advancement (Next Iteration)
-```
+1. **Atomic Writes:** State updates (`project_state.md`, `iteration_history.json`, `walkthrough.md`) are written **only AFTER Pytest test suites pass 100% and verification completes**.
+2. **Crash Recovery & Auto-Resume Check:**  
+   When starting a new session or after an unexpected exit, Antigravity executes the **Resume Protocol**:
+   - Read `project_state.md`.
+   - Check `Current Status`.
+   - If `Status != COMPLETED`, resume automatically from the last verified checkpoint.
+   - If `Status == COMPLETED`, prompt for the next project milestone.
 
 ---
 
-## 5. Dual Execution Modes Overview
+## 5. State Transition Rules
+
+Every cycle enforces the following strict state transitions:
+
+```
+  [PLANNING] ──► [EXECUTING] ──► [REVIEWING] ──► [ATOMIC STATE WRITE] ──► [NEXT CYCLE]
+      ▲                                                                         │
+      └──────────────────────────── (Auto-Resume Check) ────────────────────────┘
+```
+
+No cycle may begin without a valid verified state checkpoint.
+
+---
+
+## 6. Dual Execution Modes Overview
 
 Developers can select between two flexible operating modes depending on project needs:
 
@@ -93,22 +97,32 @@ Developers can select between two flexible operating modes depending on project 
 
 ---
 
-## 6. Mode 4: Pre-Planned Multi-Step Loop Protocol
+## 7. Mode 4: Pre-Planned Multi-Step Loop Protocol (State-Managed)
 
-1. **Context Reconstruction:** Antigravity reads `project_state.md` and `implementation_plan.md`.
-2. **Task Spawning:** Posts Iteration $N$ prompt to the Desktop Bridge queue.
-3. **Live Desktop Streaming:** `gui_bridge.ps1` pops up a visible terminal titled `ANTIGRAVITY LIVE STREAM [ITERATION N] - Task Title`.
-4. **Verification & State Update:** As soon as OpenCode exits, Antigravity runs test suites, updates `iteration_history.json` and `project_state.md`, and advances to Iteration $N+1$.
+1. **Resume Check:** Antigravity reads `project_state.md` and `implementation_plan.md`.
+2. **Status Update:** Set `Current Status = EXECUTING` in `project_state.md`.
+3. **Desktop Bridge Spawning:** Post Iteration $N$ task prompt to the Desktop Bridge queue.
+4. **Live Desktop Streaming:** `gui_bridge.ps1` pops up a visible terminal titled `ANTIGRAVITY LIVE STREAM [ITERATION N] - Task Title`.
+5. **Verification & Atomic State Write:**  
+   Once OpenCode finishes:
+   - Run Pytest test suite.
+   - Append audit log to `iteration_history.json`.
+   - Update `project_state.md` (`Last Completed Task`, `Current Status = PLANNING` for $N+1$).
+   - Advance to Iteration $N+1$.
 
 ---
 
-## 7. Mode 5: Self-Correcting Autonomous Quality Loop Protocol
+## 8. Mode 5: Self-Correcting Quality Loop Protocol (State-Managed)
 
-1. **Context Reconstruction:** Antigravity reads `project_state.md`.
+1. **Resume Check:** Antigravity reads `project_state.md`.
 2. **Execution & Audit:** OpenCode executes task; Antigravity inspects diffs and test results.
-3. **Decision Gate:**
-   - **Option A (DoD Achieved):** Update `project_state.md` to `STATUS: DONE` and summarize completion.
-   - **Option B (Improvements Required):** Categorize findings (`Critical`/`Recommended`), update `iteration_history.json`, generate dynamic improvement task $N+1$, and post to GUI Bridge!
+3. **Decision Gate & State Classification:**
+   - **Option A (DoD Achieved):** Set `Current Status = COMPLETED` in `project_state.md` and write `walkthrough.md`.
+   - **Option B (Improvements Required):**  
+     - Categorize findings (`Critical` / `Recommended`).
+     - Append findings to `iteration_history.json`.
+     - Update `project_state.md` with `Outstanding Critical Issues` count.
+     - Generate dynamic improvement task $N+1$ and post to GUI Bridge!
 4. **Review Classification Rules:**
    - **Critical (Must Fix):** Bugs, test failures, security flaws ➔ Triggers Cycle $N+1$.
    - **Recommended (High Value):** Architecture, validation hardening ➔ Triggers Cycle $N+1$.
@@ -116,19 +130,19 @@ Developers can select between two flexible operating modes depending on project 
 
 ---
 
-## 8. Definition of Done (DoD)
+## 9. Definition of Done (DoD)
 
-A milestone is considered **DONE** if and only if:
+A milestone is complete only when:
 - [ ] Source files exist in the specified project directory.
 - [ ] Accompanying unit test files exist.
 - [ ] Unit tests pass with 0 failures and 0 errors.
 - [ ] No Critical or Recommended issues remain.
-- [ ] `project_state.md` and `iteration_history.json` are updated.
-- [ ] Walkthrough documentation (`walkthrough.md`) has been updated.
+- [ ] Atomic state write completed (`project_state.md` status set to `COMPLETED`).
+- [ ] `iteration_history.json` and `walkthrough.md` updated.
 
 ---
 
-## 9. Global Quick-Start Guide for Any Project Repository
+## 10. Global Quick-Start & Auto-Resume Guide
 
 To use this workflow in any new conversation or workspace:
 1. **Launch Desktop Bridge Once Globally:**  
@@ -138,7 +152,7 @@ To use this workflow in any new conversation or workspace:
    - **"Follow MULTI_AGENT_WORKFLOW.md in Mode 4 to build [GOAL]."**
    - OR
    - **"Follow MULTI_AGENT_WORKFLOW.md in Mode 5 to build [GOAL]."**
-3. **Instant Context Resumption:**  
-   If starting a new chat on an existing project, say:  
+3. **Automatic Crash Recovery & Resume:**  
+   In any new chat or after a session reset, simply say:  
    **"Resume project using MULTI_AGENT_WORKFLOW.md."**  
-   Antigravity will read `project_state.md` and pick up right where you left off!
+   Antigravity will read `project_state.md`, detect the exact active checkpoint, and resume execution seamlessly!
