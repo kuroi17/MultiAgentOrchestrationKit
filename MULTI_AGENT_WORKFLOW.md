@@ -1,6 +1,6 @@
 # Standard Operating Procedure: Multi-Agent Software Development Workflow
 
-**Document Version:** 2.3.0  
+**Document Version:** 3.0.0 (Dual-Mode Edition)  
 **Target Agents:** Antigravity (Lead Architect & QA Orchestrator) & OpenCode / CLI Execution Agents  
 **Scope:** Reusable engineering manual for multi-agent software development across any project repository.
 
@@ -27,7 +27,18 @@ This **Multi-Agent Workflow** decouples high-level reasoning from low-level code
 
 ---
 
-## 3. The 7-Step Iterative Workflow Loop
+## 3. Dual Execution Modes Overview
+
+Developers can select between two flexible operating modes depending on project needs:
+
+| Operating Mode | Protocol | Ideal Use Cases | Execution Pattern |
+| :--- | :--- | :--- | :--- |
+| **Mode 4** | **Pre-Planned Multi-Step Loop** | Standard features, CRUD modules, predictable task lists | Executes a fixed sequence of tasks ($T_1 \rightarrow T_2 \rightarrow T_3$) continuously via live pop-ups. |
+| **Mode 5** | **Self-Correcting Quality Loop** | Complex algorithms, refactoring, fuzzy requirements, security audits | Antigravity conducts deep code audits, categorizes findings (`Critical`/`Recommended`), and **dynamically generates self-correction tasks** until DoD is achieved. |
+
+---
+
+## 4. Mode 4: Pre-Planned Multi-Step Loop Protocol
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -67,112 +78,66 @@ This **Multi-Agent Workflow** decouples high-level reasoning from low-level code
 
 ---
 
-## 4. Rules for Task Decomposition
+## 5. Mode 5: Self-Correcting Autonomous Quality Loop Protocol
 
-To maximize execution agent success:
-1. **Atomic & Scoped:** Each task must focus on a single module, class, or decoupled feature set.
-2. **Explicit Interfaces:** Prompts must explicitly state function signatures, input/output types, error handling expectations, and file paths.
-3. **Mandatory Test Requirement:** Every task prompt assigned to an execution agent must mandate creating corresponding unit test files.
-4. **Self-Contained Context:** Always specify exact file paths and expected behaviors.
-
----
-
-## 5. Standard CLI Prompting Format for OpenCode
-
-When Antigravity posts tasks for OpenCode, the invocation string follows this structured template:
-
-```powershell
-opencode run --auto -m opencode/deepseek-v4-flash-free --print-logs `
-"Task ID: [TASK_ID]
-Context: [BRIEF ARCHITECTURAL CONTEXT]
-Requirements:
-1. Create/Modify file: [FILE_PATH]
-   - Implement function/class: [SIGNATURE]
-   - Docstrings & type hints required.
-2. Create/Modify test file: [TEST_FILE_PATH]
-   - Write comprehensive unit tests covering edge cases.
-3. Verify that all unit tests pass before exiting."
+```
+                                  User Input
+                                      │
+                                      ▼
+                            Planning & Architecture
+                                      │
+                                      ▼
+                            OpenCode Execution
+                                      │
+                                      ▼
+                            Antigravity Review & Audit
+                                      │
+                                      ▼
+                                Decision Gate
+                   ┌──────────────────┴──────────────────┐
+                   ▼                                     ▼
+      Option A: DoD Achieved                Option B: Improvements Required
+        (Finish & Report)                        (Categorize Findings:
+                                                 Critical / Recommended)
+                                                         │
+                                                         ▼
+                                             Generate Improvement Task
+                                                         │
+                                                         ▼
+                                            Launch OpenCode via Bridge
+                                                         │
+                                                         ▼
+                                             Execute & Review Again
 ```
 
----
-
-## 6. Rules for Verification Before Reporting Completion
-
-Antigravity **must never declare a task completed** until the following empirical checks pass:
-1. **File Existence Check:** Confirm target source files and test files exist in the expected workspace directory.
-2. **Automated Test Suite Execution:** Execute test runners (`python -m unittest`, `pytest`, `npm test`, etc.) via terminal and verify 100% exit code 0 success.
-3. **Static Analysis & Code Review:** Inspect generated code for proper docstrings, type annotations, and absence of dummy fallbacks.
+### Review Classification Rules (Preventing Endless Polishing):
+- **Critical (Must Fix):** Failing tests, bugs, security issues, broken contracts ➔ Triggers Cycle $N+1$.
+- **Recommended (High Value):** Design pattern improvements, validation hardening ➔ Triggers Cycle $N+1$.
+- **Optional (Minor):** Cosmetic naming, trivial comments ➔ Logged only; **does NOT trigger new iteration**.
 
 ---
 
-## 7. Definition of Done (DoD)
+## 6. Definition of Done (DoD)
 
-A task is considered **DONE** if and only if:
+A task/milestone is considered **DONE** if and only if:
 - [ ] Source files exist in the specified project directory.
 - [ ] Accompanying unit test files exist.
 - [ ] Unit tests pass with 0 failures and 0 errors.
+- [ ] No Critical or Recommended issues remain.
 - [ ] Code adheres to type safety and documentation standards.
 - [ ] Antigravity has performed visual/diff code inspection.
 - [ ] Walkthrough documentation (`walkthrough.md`) has been updated.
 
 ---
 
-## 8. Error Handling & Recovery Process
-
-If an execution agent fails or generates broken code:
-1. **Log Inspection:** Antigravity reads stdout/stderr and error tracebacks.
-2. **Root Cause Analysis:** Determine whether failure was due to prompt constraints, model selection, or environment issues.
-3. **Targeted Remediation:** Antigravity re-invokes the execution agent with a targeted bug-fix prompt containing the exact error log.
-4. **Model Fallback:** If the execution agent hangs or fails repeatedly, switch the model flag (`-m`) to a higher-capability tier.
-
----
-
-## 9. Guidelines for Token Minimization
-
-To preserve Antigravity's context window and minimize costs across long sessions:
-- **Delegate Code Generation:** Antigravity must never generate massive multi-file code blocks directly in its chat context when an execution agent can do it.
-- **Compact Log Summaries:** Antigravity should parse tool outputs silently and summarize only key findings to the user.
-- **Isolated Execution History:** Raw LLM generation loops stay inside OpenCode's isolated CLI session.
-
----
-
-## 10. Future Extensibility (Swap-and-Play Execution Agents)
-
-This workflow is agnostic to the underlying CLI tool:
-- **OpenCode:** `opencode run --auto -m <model> "prompt"`
-- **Claude Code CLI:** `claude -p "prompt"`
-- **Codex / Gemini CLI:** `<agent_cli> run "prompt"`
-
----
-
-## 11. Global Quick-Start Guide for Any Project Repository
+## 7. Global Quick-Start Guide for Any Project Repository
 
 To use this workflow in any new conversation or workspace:
 1. **Launch Desktop Bridge Once Globally:**  
    Open a terminal tab and run:  
    `cd "C:\Users\HP LAPTOP 15s\.gemini\antigravity-ide\scratch"; .\gui_bridge.ps1`
 2. **Instruct Antigravity in Any New Chat:**  
-   **"Follow MULTI_AGENT_WORKFLOW.md in Autonomous Mode to build [YOUR_PROJECT_GOAL]."**
-3. **Automatic Directory Handling:**  
-   Antigravity automatically detects your current active workspace project path (CWD) and passes it in the bridge task payload. The pop-up window automatically `cd`s to your target project folder!
-
----
-
-## 12. Autonomous Multi-Agent Iteration Loop Protocol
-
-When running in **Autonomous Mode**, Antigravity executes sequential iterations without stopping until the milestone satisfies the Definition of Done:
-
-1. **Desktop GUI Bridge Event Post:**  
-   Antigravity posts the prompt for Iteration $N$ (tagged with iteration index `[ITERATION N]`) to the central Desktop Bridge queue.
-2. **Live Visual Pop-Up Window with Window Title Indicator:**  
-   `gui_bridge.ps1` detects the task and automatically spawns a visible PowerShell window titled:  
-   `ANTIGRAVITY LIVE STREAM [ITERATION N] - [TASK_TITLE]`  
-   running:  
-   `opencode run --auto -m opencode/deepseek-v4-flash-free --print-logs "<ANTIGRAVITY_PROMPT>"`  
-   The user watches OpenCode stream its reasoning and code creation live on screen.
-3. **Automated Detection & Verification:**  
-   As soon as OpenCode completes the task and exits the window, Antigravity automatically detects the new/modified files and runs `pytest`/test runner verification.
-4. **Continuous Advancement Loop:**  
-   - If tests pass 100%: Antigravity records Iteration $N$ success, posts Iteration $N+1$ to the Desktop Bridge queue, and a new pop-up window opens automatically for the next task!
-   - If tests fail: Antigravity captures the error traceback, posts a repair task to the bridge queue, and OpenCode re-runs to fix the bug.
-5. **Safety Circuit Breaker:** Max 5 autonomous iterations per milestone.
+   - For Pre-Planned tasks: **"Follow MULTI_AGENT_WORKFLOW.md in Mode 4 to build [GOAL]."**
+   - For Self-Correcting tasks: **"Follow MULTI_AGENT_WORKFLOW.md in Mode 5 to build [GOAL]."**
+3. **Automatic Directory & Live Streaming:**  
+   Antigravity automatically passes the target project CWD and task payload to the central bridge, popping up live PowerShell windows with window title iteration indicators (`[CYCLE N]`)!
