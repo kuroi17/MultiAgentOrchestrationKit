@@ -17,8 +17,8 @@ if (!(Test-Path $QueueFile)) {
 }
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "     ANTIGRAVITY LIVE DESKTOP VISUALIZER ACTIVE (SESSION 1)" -ForegroundColor Yellow
-Write-Host "  Single-Window Mode Active | RAM Protection Enabled       " -ForegroundColor Cyan
+Write-Host "  ANTIGRAVITY LIVE DESKTOP VISUALIZER ACTIVE (SESSION 1)" -ForegroundColor Yellow
+Write-Host "  Multi-Worker Parallel Streaming Mode (Max 3 Workers)  " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -40,15 +40,17 @@ while ($true) {
                 if ($tasks -and $tasks.Count -gt $LastProcessedCount) {
                     for ($i = $LastProcessedCount; $i -lt $tasks.Count; $i++) {
                         $task = $tasks[$i]
+                        $workerTag = if ($task.worker_id) { " [$($task.worker_id)]" } else { "" }
                         $iterTag = if ($task.iteration) { " [ITERATION $($task.iteration)]" } else { "" }
-                        Write-Host "[ANTIGRAVITY ARCHITECT]$iterTag Launching Task: $($task.title)" -ForegroundColor Green
+                        
+                        Write-Host "[ANTIGRAVITY ARCHITECT]$workerTag$iterTag Launching Task: $($task.title)" -ForegroundColor Green
                         
                         $cwd = if ($task.cwd) { $task.cwd } else { "C:\Users\HP LAPTOP 15s\.gemini\antigravity-ide\scratch" }
                         $model = if ($task.model) { $task.model } else { "opencode/deepseek-v4-flash-free" }
                         $promptText = if ($task.prompt) { $task.prompt } else { $task.command }
                         
                         if ($task.action -eq "opencode") {
-                            $windowTitle = "ANTIGRAVITY LIVE STREAM$iterTag - $($task.title)"
+                            $windowTitle = "ANTIGRAVITY LIVE STREAM$workerTag$iterTag - $($task.title)"
                             $psScript = "`$host.UI.RawUI.WindowTitle = '$windowTitle'`nSet-Location -LiteralPath '$cwd'`nopencode run --auto -m $model --print-logs '$promptText'"
                             $bytes = [System.Text.Encoding]::Unicode.GetBytes($psScript)
                             $encoded = [Convert]::ToBase64String($bytes)

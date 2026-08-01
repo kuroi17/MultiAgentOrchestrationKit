@@ -18,6 +18,7 @@ const action = process.argv[2] || 'opencode';
 const title = process.argv[3] || 'Agent Task';
 const prompt = process.argv[4] || 'Task prompt instructions...';
 const iteration = process.argv[5] || null;
+const workerId = process.argv[6] || null;
 const targetCwd = process.cwd();
 
 tasks.push({
@@ -25,6 +26,7 @@ tasks.push({
   action: action,
   title: title,
   iteration: iteration,
+  worker_id: workerId,
   cwd: targetCwd,
   prompt: prompt,
   command: prompt,
@@ -32,4 +34,4 @@ tasks.push({
 });
 
 fs.writeFileSync(queueFile, JSON.stringify(tasks, null, 2));
-console.log(`[Antigravity] Posted Task '${title}' (Iteration ${iteration || 1}) for CWD '${targetCwd}'!`);
+console.log(`[Antigravity] Posted Task '${title}' (Worker: ${workerId || 'Worker-1'}, Iteration: ${iteration || 1}) for CWD '${targetCwd}'!`);

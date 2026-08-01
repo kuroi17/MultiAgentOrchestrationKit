@@ -1,7 +1,7 @@
 # Standard Operating Procedure: Multi-Agent Software Development Workflow
 
-**Document Version:** 7.0.0 (Dependency Graph & Parallel Planning Edition)  
-**Target Agents:** Antigravity (Lead Architect, DAG Orchestrator & QA Manager) & OpenCode / CLI Execution Agents  
+**Document Version:** 8.0.0 (True Parallel Multi-Worker Orchestration Edition)  
+**Target Agents:** Antigravity (Lead Architect & Parallel Worker Pool Manager) & OpenCode / CLI Execution Agents  
 **Scope:** Reusable engineering manual for multi-agent software development across any project repository.
 
 ---
@@ -11,8 +11,8 @@
 Modern AI-assisted software development requires clear separation of concerns. Running a single LLM to simultaneously handle high-level architectural planning, file system edits, token-heavy code generation, and iterative debugging leads to context bloat, degraded reasoning, and unnecessary API token costs.
 
 This **Multi-Agent Workflow** decouples high-level reasoning from low-level code generation:
-- **Antigravity** acts as the high-level **Chief Architect, DAG Orchestrator, Reviewer, and QA Manager**, maintaining a lean context window focused on project goals, task dependency graphs, and critical path analysis.
-- **CLI Execution Agents (OpenCode, Claude Code, etc.)** act as specialized **Execution Workers**, performing localized file modifications, heavy code generation, and fast refactoring in isolated CLI subprocesses.
+- **Antigravity** acts as the high-level **Chief Architect, Parallel Worker Pool Manager, and QA Orchestrator**, managing DAG dependency graphs, dispatching concurrent OpenCode workers, enforcing synchronization barriers, and verifying merge quality.
+- **CLI Execution Workers (`Worker-1`, `Worker-2`, `Worker-3`)** act as specialized **Execution Agents**, performing localized file modifications, heavy code generation, and fast refactoring in isolated CLI subprocesses streaming live on screen.
 - **The User** acts as the **Product Owner & Director**, approving architectural plans and reviewing incremental milestone deliverables.
 
 ---
@@ -21,56 +21,100 @@ This **Multi-Agent Workflow** decouples high-level reasoning from low-level code
 
 | Role | Agent / Entity | Core Responsibilities |
 | :--- | :--- | :--- |
-| **Product Owner** | **User** | Defines high-level project goals, approves milestone DAG graphs, monitors dashboards, and accepts final project deliverables. |
-| **DAG Orchestrator & Lead Architect** | **Antigravity** | Decomposes milestones into Directed Acyclic Graphs (DAGs), calculates critical paths, schedules `READY` tasks, conducts QA code audits, and manages project state transitions. |
-| **Execution Agent** | **OpenCode / CLI Agent** | Receives task prompts from Antigravity, generates source code and unit tests, performs inline refactoring, and reports completion results. |
+| **Product Owner** | **User** | Defines project goals, approves milestone plans, monitors parallel worker streaming windows, and accepts final deliverables. |
+| **Parallel Pool Manager & Architect** | **Antigravity** | Detects worker capability, manages `worker_pool.md`, dispatches `READY` tasks to idle workers, enforces synchronization barriers, resolves conflicts, and manages state transitions. |
+| **Parallel Execution Workers** | **OpenCode CLI Workers** (`Worker-1` to `Worker-3`) | Execute assigned independent task nodes concurrently in live streaming pop-up windows. |
 
 ---
 
-## 3. Project Lifecycle Hierarchy & DAG Topology 🕸️
+## 3. Worker Pool Architecture (`worker_pool.md`) 🏊‍♂️
 
-In Version 7.0.0, tasks are no longer simple linear arrays. Antigravity models every milestone as a **Directed Acyclic Graph (DAG)**:
+Antigravity maintains an active pool of up to 3 independent execution workers:
 
 ```
-                          PROJECT GOAL
-                               │
-       ┌───────────────────────┼───────────────────────┐
-       ▼                       ▼                       ▼
-  MILESTONE 1             MILESTONE 2             MILESTONE 3
-       │
-       ▼
- ┌───────────┐
- │ T1: Core  │
- └─────┬─────┘
-       │
- ┌─────┴───────────────┐
- ▼                     ▼
-┌──────────────┐ ┌──────────────┐
-│ T2: Manager  │ │ T3: Storage  │
-└──────┬───────┘ └──────┬───────┘
-       │                │
-       └───────┬────────┘
-               ▼
-        ┌──────────────┐
-        │ T4: CLI App  │ (Parallelizable Foundation)
-        └──────────────┘
+                            DAG SCHEDULER
+                                 │
+         ┌───────────────────────┼───────────────────────┐
+         ▼                       ▼                       ▼
+     WORKER-1                WORKER-2                WORKER-3
+(Frontend Module)       (Backend API)           (Documentation)
+         │                       │                       │
+         ▼                       ▼                       ▼
+  Live Window 1           Live Window 2           Live Window 3
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+                                 ▼
+                     SYNCHRONIZATION BARRIER
+                                 │
+                                 ▼
+                         MERGE & QA GATE
 ```
+
+### Worker Status State Machine:
+- **`IDLE`:** Worker available for task assignment.
+- **`RUNNING`:** Worker executing task in a live streaming pop-up window.
+- **`WAITING`:** Worker finished task; waiting at synchronization barrier.
+- **`FAILED`:** Worker execution failed; flagged for isolated rescheduling.
+- **`COMPLETE`:** Worker output verified 100% by Antigravity.
 
 ---
 
-## 4. Dependency Graph & Scheduler Files 📊
+## 4. Worker Capability Detection & Graceful Fallback 🛡️
 
-### Standard State File Structure (`.agent_state/` or project root):
+Before dispatching tasks, Antigravity executes the **Capability Detection Protocol**:
+1. **Detect Available Concurrency:**  
+   - 3 Workers available ➔ Launch 3 parallel workers (`Worker-1`, `Worker-2`, `Worker-3`).
+   - 2 Workers available ➔ Launch 2 parallel workers (`Worker-1`, `Worker-2`).
+   - 1 Worker available ➔ **Gracefully fall back to sequential execution**.
+2. **Prevent Resource Contention:** Hard cap of Max 3 concurrent execution processes.
+
+---
+
+## 5. Parallel Desktop GUI Streaming 🖥️
+
+Every parallel worker launches its own visible PowerShell terminal window with custom title bar labeling:
+- Window 1: `ANTIGRAVITY LIVE STREAM [WORKER-1] [CYCLE 1] - Frontend Module`
+- Window 2: `ANTIGRAVITY LIVE STREAM [WORKER-2] [CYCLE 1] - Backend API`
+- Window 3: `ANTIGRAVITY LIVE STREAM [WORKER-3] [CYCLE 1] - Documentation`
+
+The developer can watch all active workers streaming code creation live on screen simultaneously!
+
+---
+
+## 6. Synchronization Barrier & Merge Gate Protocol 🛑
+
+Antigravity enforces a strict **Synchronization Barrier** before advancing to downstream dependent tasks:
+
+1. **Barrier Hold:** Antigravity pauses execution until ALL dispatched parallel workers exit their windows.
+2. **Merge & Conflict Audit:** Antigravity inspects generated files across workers:
+   - Detects file/API signature conflicts.
+   - Executes Pytest test suites across all modules.
+   - Verifies zero regression or duplicate implementations.
+3. **Barrier Release:** If 100% passed, unblocks dependent `BLOCKED` tasks in the DAG graph.
+
+---
+
+## 7. Smart Partial Rescheduling
+
+If `Worker-2` fails during a parallel cycle while `Worker-1` and `Worker-3` succeed:
+- Antigravity **does NOT restart the entire milestone**.
+- Antigravity isolates `Worker-2`, generates a targeted repair prompt, and launches **only `Worker-2`**, keeping completed work from `Worker-1` and `Worker-3` intact!
+
+---
+
+## 8. Scheduler & State File Map 📊
+
 ```
 Project/
-├── MULTI_AGENT_WORKFLOW.md      (Protocol Manual v7.0.0)
+├── MULTI_AGENT_WORKFLOW.md      (Protocol Manual v8.0.0)
 ├── project_state.md             (Single Source of Truth Index)
-├── milestone_plan.md            (Milestone decomposition & ordering)
-├── milestone_status.md          (Live progress & health dashboard)
+├── worker_pool.md               (Worker states: IDLE, RUNNING, COMPLETE)
+├── scheduler_dashboard.md       (Live multi-worker status dashboard)
 ├── dependency_graph.md          (DAG Task Node Map & relationships)
-├── critical_path.md             (Critical Path Analysis & bottlenecks)
+├── critical_path.md             (Critical Path Analysis)
 ├── scheduler_state.md           (Queue status: BLOCKED, READY, RUNNING, COMPLETE)
-├── scheduler_log.md             (Chronological task dispatch log)
+├── scheduler_log.md             (Chronological dispatch log)
 ├── implementation_plan.md       (Active milestone task roadmap)
 ├── architecture_decisions.md    (Cross-milestone ADR memory)
 ├── iteration_history.json       (Machine-readable audit trail)
@@ -78,79 +122,23 @@ Project/
 └── project_retrospective.md     (Final project retrospective summary)
 ```
 
-### 1. `dependency_graph.md` Schema:
-Models task nodes and explicit prerequisite relationships:
-- Task Node ID (`T1`, `T2`, `T3`)
-- Prerequisites (`Depends On`)
-- Dependents (`Unblocks`)
-- Execution Agent Assigned
-- Parallelizability Tag (`PARALLELIZABLE` / `SEQUENTIAL`)
+---
 
-### 2. `critical_path.md` Schema:
-Calculates the longest dependency chain and estimated completion timeline:
-- **Critical Path Chain:** `T1: Core -> T2: Manager -> T4: CLI App`
-- **Bottleneck Node:** `T2: Manager`
-- **Estimated Completion Path:** 3 Cycles
+## 9. Dual Execution Modes (Mode 4 & Mode 5) Preserved
+
+Version 8 fully preserves both operating modes:
+- **Mode 4 (Pre-Planned Multi-Step Loop):** Parallel workers execute pre-planned `READY` DAG nodes simultaneously.
+- **Mode 5 (Self-Correcting Quality Loop):** Parallel workers execute dynamic self-correction and refactoring tasks concurrently.
 
 ---
 
-## 5. Task Scheduler State Machine
+## 10. Global Quick-Start & Auto-Resume Guide
 
-Antigravity manages task states using a 5-stage state machine:
-
-```
-  [BLOCKED] ──(Prerequisites Met)──► [READY] ──(Dispatched)──► [RUNNING]
-                                                                  │
-  [COMPLETE] ◄──(DoD Verified)─── [REVIEWING] ◄──(Code Written)───┘
-```
-
-### Scheduling Rules:
-1. **BLOCKED:** Task has uncompleted prerequisite dependencies.
-2. **READY:** All prerequisite tasks are `COMPLETE`. Can be scheduled immediately.
-3. **RUNNING:** Task dispatched to OpenCode CLI via Desktop GUI Bridge.
-4. **REVIEWING:** OpenCode finished; Antigravity conducting QA audit.
-5. **COMPLETE:** QA passed 100%; unblocks dependent downstream tasks.
-
----
-
-## 6. Critical Path Analysis & Parallel Readiness (v8 Foundation)
-
-Antigravity tags all `READY` tasks without mutual dependencies as `PARALLELIZABLE`.  
-In Version 7, `PARALLELIZABLE` tasks are executed in optimal sequence. In **Version 8**, Antigravity will dispatch them simultaneously to multiple workers (Worker A, Worker B, Worker C)!
-
----
-
-## 7. Intelligent Replanning (Mode 5 Adaptation)
-
-If Mode 5 QA audit reveals a major architectural requirement:
-- Antigravity dynamically **inserts, splits, or merges DAG nodes** in `dependency_graph.md`.
-- Re-calculates `critical_path.md` without invalidating existing `COMPLETE` nodes.
-
----
-
-## 8. Dual Execution Modes Overview
-
-| Mode | Name | Best Used For | Execution Pattern |
-| :--- | :--- | :--- | :--- |
-| **Mode 4** | **Pre-Planned Multi-Step Loop** | Predictable CRUD features | Executes `READY` tasks along the critical path via live bridge. |
-| **Mode 5** | **Self-Correcting Quality Loop** | Complex algorithms, refactoring | Dynamic DAG node generation & Planner ➔ Executor ➔ Reviewer loop. |
-
----
-
-## 9. Atomic State Write Protocol & Crash Recovery
-
-1. **Atomic Writes:** State updates (`project_state.md`, `dependency_graph.md`, `scheduler_state.md`) are written **only AFTER verification passes 100%**.
-2. **Crash Recovery:** Saying **"Resume project using MULTI_AGENT_WORKFLOW.md"** reads `scheduler_state.md` and `project_state.md`, auto-recovering from the exact last verified DAG state!
-
----
-
-## 10. Global Quick-Start Guide for Any Project Repository
-
-To run a project with DAG dependency scheduling:
+To run a project with True Parallel Multi-Worker Orchestration:
 1. **Launch Desktop Bridge Once Globally:**  
    Open a terminal tab and run:  
    `cd "C:\Users\HP LAPTOP 15s\.gemini\antigravity-ide\scratch"; .\gui_bridge.ps1`
 2. **Instruct Antigravity in Any Workspace:**  
    **"Follow MULTI_AGENT_WORKFLOW.md in Mode 5 to build [PROJECT_GOAL]."**
-3. **DAG & Critical Path Execution:**  
-   Antigravity generates `dependency_graph.md` and `critical_path.md`. Upon approval, Antigravity schedules `READY` tasks, updates the scheduler state, and pops up live streaming terminal windows automatically!
+3. **Automatic Parallel Dispatch & Resume:**  
+   Antigravity analyzes DAG dependencies, detects worker capability, dispatches tasks to `Worker-1`, `Worker-2`, `Worker-3` concurrently, streams live windows on screen, and enforces synchronization barriers automatically!
