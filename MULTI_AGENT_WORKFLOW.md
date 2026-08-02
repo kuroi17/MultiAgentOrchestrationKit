@@ -1,7 +1,7 @@
 # Standard Operating Procedure: Multi-Agent Software Development Workflow
 
-**Document Version:** 9.0.0 (Autonomous Orchestrator & Dynamic Swarm Edition)  
-**Target Agents:** Antigravity (Autonomous Chief Architect, Auto-Mode Classifier & Swarm Manager) & OpenCode / CLI Execution Agents  
+**Document Version:** 10.0.0 (Adaptive Collaborative Swarm Edition)  
+**Target Agents:** Antigravity (Autonomous Chief Architect, Traffic Controller & Swarm Manager) & OpenCode / CLI Execution Agents  
 **Scope:** Reusable engineering manual for multi-agent software development across any project repository.
 
 ---
@@ -10,10 +10,10 @@
 
 Modern AI-assisted software development requires clear separation of concerns. Running a single LLM to simultaneously handle high-level architectural planning, file system edits, token-heavy code generation, and iterative debugging leads to context bloat, degraded reasoning, and unnecessary API token costs.
 
-This **Multi-Agent Workflow** decouples high-level reasoning from low-level code generation:
-- **Antigravity** acts as the high-level **Chief Architect, Autonomous Classifier, Swarm Manager, and QA Orchestrator**, automatically evaluating task complexity, auto-selecting execution modes, calculating DAG dependencies, and dynamically scaling parallel OpenCode workers.
-- **CLI Execution Workers (`Worker-1` to `Worker-5`)** act as specialized **Execution Agents**, performing localized file modifications, heavy code generation, and fast refactoring in isolated CLI subprocesses streaming live on screen.
-- **The User** acts as the **Product Owner & Director**, approving architectural plans and watching live streaming parallel pop-up terminals.
+Version 10.0.0 evolves the Multi-Agent Workflow from parallel execution into **Adaptive Collaborative Swarm Intelligence**:
+- **Antigravity** acts as the high-level **Chief Architect, Adaptive Decision Engine, Swarm Traffic Controller, and Message Broker**, automatically evaluating whether work requires **Sequential**, **Parallel Swarm**, or **Collaborative Swarm** execution, mediating all inter-worker communication via `swarm_blackboard.md`.
+- **CLI Execution Workers (`Worker-1` to `Worker-5`)** act as specialized **Execution Agents**, performing localized file modifications, heavy code generation, and fast refactoring in isolated CLI subprocesses.
+- **The User** acts as the **Product Owner & Director**, approving architectural plans and watching live streaming parallel pop-up terminals alongside the **7th Live Swarm Blackboard Window**.
 
 ---
 
@@ -21,122 +21,96 @@ This **Multi-Agent Workflow** decouples high-level reasoning from low-level code
 
 | Role | Agent / Entity | Core Responsibilities |
 | :--- | :--- | :--- |
-| **Product Owner** | **User** | Defines project goals, approves milestone plans, monitors parallel worker streaming windows, and accepts final deliverables. Optional manual override for Mode 4 / Mode 5. |
-| **Autonomous Swarm Manager & Architect** | **Antigravity** | Auto-evaluates task complexity, auto-assigns Mode 4 vs Mode 5, dynamically scales parallel worker pool (1 to 5 workers based on DAG `READY` tasks), enforces synchronization barriers, resolves conflicts, and manages state transitions. |
-| **Parallel Execution Workers** | **OpenCode CLI Workers** (`Worker-1` to `Worker-5`) | Execute assigned independent task nodes concurrently in live streaming pop-up windows. |
+| **Product Owner** | **User** | Defines project goals, approves milestone plans, monitors parallel worker streaming windows, and accepts final deliverables. Optional manual override for Mode & Swarm selection. |
+| **Adaptive Swarm Controller & Architect** | **Antigravity** | Auto-evaluates coupling & DAG graph to select Sequential, Parallel, or Collaborative Swarm. Mediates all messages through `swarm_blackboard.md`. Enforces 7-Window streaming and synchronization barriers. |
+| **Parallel Execution Workers** | **OpenCode CLI Workers** (`Worker-1` to `Worker-5`) | Execute assigned independent or collaborative task nodes concurrently. Publish requests to Swarm Blackboard. Bypassing Antigravity or direct worker messaging is strictly prohibited. |
 
 ---
 
-## 3. Auto-Mode Selection & Complexity Classifier Protocol 🧠
+## 3. Adaptive Swarm Decision Engine 🧠
 
-Antigravity automatically evaluates project goals to select the optimal execution mode:
+Antigravity automatically evaluates project tasks before dispatch to select the optimal Swarm Mode:
 
 ```
-                          PROJECT GOAL / TASK
-                                   │
-                                   ▼
-                   [COMPLEXITY & RISK CLASSIFIER]
-                   ┌───────────────┴───────────────┐
-                   ▼                               ▼
-          Low Risk / Rigid CRUD           High Complexity / Refactor
-             / Clear Scope                     / Quality Audit Needed
-                   │                               │
-                   ▼                               ▼
-       MODE 4 (Pre-Planned Loop)       MODE 5 (Self-Correcting Quality Loop)
+                            PROJECT MILESTONE
+                                    │
+                                    ▼
+                     [ADAPTIVE SWARM DECISION ENGINE]
+                     ┌──────────────┼──────────────┐
+                     ▼              ▼              ▼
+                SEQUENTIAL     PARALLEL SWARM  COLLABORATIVE SWARM
+             (Dependent DAG)  (Independent)   (Shared Schema/API)
 ```
 
-### Classification Rules:
-1. **Mode 4 (Pre-Planned Multi-Step Loop):**  
-   - Auto-selected for standard features, straightforward CRUD modules, and well-defined sequential tasks.
-2. **Mode 5 (Self-Correcting Quality Loop):**  
-   - Auto-selected for complex algorithms, system refactoring, fuzzy requirements, or security-critical code requiring continuous QA audits.
-3. **Manual Developer Override:**  
-   - If the user explicitly commands *"Use Mode 4"* or *"Use Mode 5"*, Antigravity **honors the user's manual choice** regardless of auto-classification.
+### Auto-Selection Criteria:
+1. **Sequential Mode:** Selected for tightly coupled single-threaded task chains ($T_1 \rightarrow T_2 \rightarrow T_3$).
+2. **Parallel Swarm Mode:** Auto-selected when tasks are completely independent (e.g. isolated utility modules, docs, separate frontend/backend files).
+3. **Collaborative Swarm Mode:** Auto-selected when tasks share API contracts, database schemas, protocol definitions, or cross-component integration interfaces.
+4. **Manual Developer Override:** The user can command *"Force Sequential"*, *"Force Parallel Swarm"*, or *"Force Collaborative Swarm"*.
 
 ---
 
-## 4. Dynamic Worker Swarm Scaling (1 to 5 Parallel Workers) 🚀
+## 4. Swarm Blackboard & Centralized Mediated Communication Protocol 🛰️
 
-Instead of a hardcoded worker limit, Antigravity **dynamically calculates parallel worker concurrency** based on the number of independent `READY` tasks at the current DAG depth:
+Centralized hub: `swarm_blackboard.md`  
+Audit log: `swarm_log.md`
 
+### Communication Architecture:
 ```
-                            DAG SCHEDULER
-                                  │
-      ┌──────────────┬────────────┼────────────┬──────────────┐
-      ▼              ▼            ▼            ▼              ▼
-  WORKER-1       WORKER-2     WORKER-3     WORKER-4       WORKER-5
- (Task Node 1)  (Task Node 2)(Task Node 3)(Task Node 4)  (Task Node 5)
-      │              │            │            │              │
-      ▼              ▼            ▼            ▼              ▼
- Live Window 1  Live Window 2 Live Window 3 Live Window 4  Live Window 5
-      │              │            │            │              │
-      └──────────────┴────────────┼────────────┴──────────────┘
-                                  │
-                                  ▼
-                      SYNCHRONIZATION BARRIER
-                                  │
-                                  ▼
-                          MERGE & QA GATE
+Worker-1 ──┐
+Worker-2 ──┤
+Worker-3 ──┼──> Swarm Blackboard (swarm_blackboard.md) ──> Antigravity (Mediator)
+Worker-4 ──┤
+Worker-5 ──┘
 ```
 
-### Concurrency Calculation Protocol:
-$$N_{\text{workers}} = \min(5, \text{Count}(\text{READY tasks at current DAG depth}))$$
-
-- **1 `READY` Task:** Launch 1 pop-up window (`Worker-1`).
-- **2 `READY` Tasks:** Launch 2 pop-up windows concurrently (`Worker-1`, `Worker-2`).
-- **3 `READY` Tasks:** Launch 3 pop-up windows concurrently (`Worker-1`, `Worker-2`, `Worker-3`).
-- **4 `READY` Tasks:** Launch 4 pop-up windows concurrently (`Worker-1` to `Worker-4`).
-- **5+ `READY` Tasks:** Launch 5 pop-up windows concurrently (`Worker-1` to `Worker-5`).
+### Core Communication Rules:
+1. **Strict Mediation:** Workers MUST NEVER directly edit another worker's files or message another worker directly.
+2. **Structured Message Payloads:** Workers publish message objects (`REQUEST`, `DISCOVERY`, `API_CONTRACT`, `SCHEMA_PROPOSAL`, `WARNING`, `BLOCKER`) via `post_gui_request.js blackboard`.
+3. **Antigravity Mediation:** Antigravity inspects requests, classifies urgency, approves/resolves schema proposals, and broadcasts updates to target workers.
 
 ---
 
-## 5. Parallel Desktop GUI Streaming 🖥️
+## 5. Seven Window Desktop GUI Streaming Architecture 🖥️
 
-Every parallel worker launches its own visible PowerShell terminal window with custom title bar labeling and rich dashboard banner:
-- Window 1: `ANTIGRAVITY LIVE STREAM [WORKER-1] [MODE 5] [CYCLE 1] - Task Target`
-- Window 2: `ANTIGRAVITY LIVE STREAM [WORKER-2] [MODE 5] [CYCLE 1] - Task Target`
-- Window 3: `ANTIGRAVITY LIVE STREAM [WORKER-3] [MODE 5] [CYCLE 1] - Task Target`
-- Window 4: `ANTIGRAVITY LIVE STREAM [WORKER-4] [MODE 5] [CYCLE 1] - Task Target`
-- Window 5: `ANTIGRAVITY LIVE STREAM [WORKER-5] [MODE 5] [CYCLE 1] - Task Target`
+Version 10.0.0 establishes a **7-Window Live Visualization Architecture**:
 
-The developer can watch up to 5 active workers streaming code creation live on screen simultaneously!
+```
+[Window 1]: GUI Bridge Controller (Session 1 Main Window)
+[Window 2]: Worker-1 Stream Window
+[Window 3]: Worker-2 Stream Window
+[Window 4]: Worker-3 Stream Window
+[Window 5]: Worker-4 Stream Window
+[Window 6]: Worker-5 Stream Window
+[Window 7]: ANTIGRAVITY SWARM BLACKBOARD (Live Mediated Message Stream)
+```
+
+The 7th window continuously streams worker communications, schema proposals, routing decisions, and barrier synchronization events live on screen in full color!
 
 ---
 
 ## 6. Synchronization Barrier & Merge Gate Protocol 🛑
 
-Antigravity enforces a strict **Synchronization Barrier** before advancing to downstream dependent tasks:
-
-1. **Barrier Hold:** Antigravity pauses execution until ALL dispatched parallel workers exit their windows.
-2. **Merge & Conflict Audit:** Antigravity inspects generated files across workers:
-   - Detects file/API signature conflicts.
-   - Executes Pytest test suites across all modules.
-   - Verifies zero regression or duplicate implementations.
-3. **Barrier Release:** If 100% passed, unblocks dependent `BLOCKED` tasks in the DAG graph.
+Before unblocking downstream tasks or merging code:
+1. **Blackboard Drain Check:** Verify all outstanding worker questions, API contracts, and schema proposals in `swarm_blackboard.md` are resolved (`COMPLETED`).
+2. **Barrier Hold:** Pause execution until all 5 workers complete.
+3. **Automated Test Suite Audit:** Execute full `pytest` regression suite across all components.
+4. **Merge Gate Release:** Unblock downstream milestones upon 100% test pass.
 
 ---
 
-## 7. Smart Partial Rescheduling
-
-If `Worker-2` fails during a parallel cycle while `Worker-1`, `Worker-3`, `Worker-4`, and `Worker-5` succeed:
-- Antigravity **does NOT restart the entire milestone**.
-- Antigravity isolates `Worker-2`, generates a targeted repair prompt, and launches **only `Worker-2`**, keeping completed work from all other workers intact!
-
----
-
-## 8. State File Map (Single Source of Truth) 📊
+## 7. State File Map (Single Source of Truth) 📊
 
 ```
 Project/
-├── MULTI_AGENT_WORKFLOW.md      (Protocol Manual v9.0.0)
-├── project_state.md             (Single Source of Truth Index)
+├── MULTI_AGENT_WORKFLOW.md      (Protocol Manual v10.0.0)
+├── project_state.md             (Single Source of Truth Index + Swarm Status)
+├── swarm_blackboard.md          (Centralized Communication Hub)
+├── swarm_log.md                 (Chronological Communication Audit Log)
 ├── worker_pool.md               (Worker states: IDLE, RUNNING, COMPLETE)
 ├── scheduler_dashboard.md       (Live multi-worker status dashboard)
 ├── dependency_graph.md          (DAG Task Node Map & relationships)
 ├── critical_path.md             (Critical Path Analysis)
-├── scheduler_state.md           (Queue status: BLOCKED, READY, RUNNING, COMPLETE)
-├── scheduler_log.md             (Chronological dispatch log)
-├── implementation_plan.md       (Active milestone task roadmap)
 ├── architecture_decisions.md    (Cross-milestone ADR memory)
 ├── iteration_history.json       (Machine-readable audit trail)
 ├── walkthrough.md               (Human-readable progress log)
@@ -145,15 +119,14 @@ Project/
 
 ---
 
-## 9. Global Quick-Start & Auto-Resume Guide
+## 8. Global Quick-Start Guide
 
-To run a project with Autonomous Orchestration:
+To execute a project using Version 10.0.0:
 1. **Launch Desktop Bridge Once Globally:**  
    Open a terminal tab and run:  
    `cd "C:\Users\HP LAPTOP 15s\.gemini\antigravity-ide\scratch"; .\gui_bridge.ps1`
 2. **Instruct Antigravity in Any Workspace:**  
-   - **Fully Autonomous:** **"Follow MULTI_AGENT_WORKFLOW.md to build [PROJECT_GOAL]."**  
-     *(Antigravity auto-classifies Mode 4 vs Mode 5 and auto-scales 1 to 5 parallel workers!)*
-   - **Manual Mode Override:** **"Follow MULTI_AGENT_WORKFLOW.md using Mode 4 (or Mode 5) to build [PROJECT_GOAL]."**
-3. **Automatic Parallel Dispatch & Resume:**  
-   Antigravity analyzes DAG dependencies, auto-scales workers up to 5 streaming pop-up windows, and enforces synchronization barriers automatically!
+   - **Autonomous Mode:** **"Follow MULTI_AGENT_WORKFLOW.md to build [PROJECT_GOAL]."**  
+   - **Explicit Collaborative Swarm:** **"Follow MULTI_AGENT_WORKFLOW.md in Collaborative Swarm Mode to build [PROJECT_GOAL]."**
+3. **Observe 7 Streaming Windows Live:**  
+   Watch 5 workers and the live **Swarm Blackboard Stream** coordinate code creation live on screen!
