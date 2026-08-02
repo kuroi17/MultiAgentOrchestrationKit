@@ -1,5 +1,5 @@
 # Windows Desktop GUI Bridge for AI Agent Orchestration (Antigravity -> OpenCode Live Visualizer)
-# Version 10.0.0 — Adaptive Collaborative Swarm & 7-Window Architecture
+# Version 10.0.0 - Adaptive Collaborative Swarm & 7-Window Architecture
 param(
     [string]$BridgeDir = "$PSScriptRoot\.gui_bridge"
 )
@@ -21,56 +21,23 @@ if (!(Test-Path $BBQueueFile)) { "[]" | Out-File -FilePath $BBQueueFile -Encodin
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Clear-Host
-$b64Banner = "PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrilojilojilojilZcgICDilojilojilojilZfilojilojilZcgIOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVl+KWiOKWiOKVlwrilojilojilojilojilZcg4paI4paI4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICDilZrilZDilZDilojilojilZTilZDilZDilZ3ilojilojilZEK4paI4paI4pWU4paI4paI4paI4paI4pWU4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICAgICDilojilojilZEgICDilojilojilZEK4paI4paI4pWR4pWa4paI4paI4pWU4pWd4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICAgICDilojilojilZEgICDilojilojilZEK4paI4paI4pWRIOKVmuKVkOKVnSDilojilojilZHilZrilojilojilojilojilojilojilZTilZ3ilojilojilojilojilojilojilojilZfilojilojilZEgICDilojilojilZEK4pWa4pWQ4pWdICAgICDilZrilZDilZ0g4pWa4pWQ4pWQ4pWQ4pWQ4pWQ4pWdIOKVmuKVkOKVkOKVkOKVkOKVkOKVkOKVneKVmuKVkOKVnSAgIOKVmuKVkOKVnQoKIOKWiOKWiOKWiOKWiOKWiOKVlyAg4paI4paI4paI4paI4paI4paI4pWXIOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVl+KWiOKWiOKWiOKVlyAgIOKWiOKWiOKVl+KWiOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVlwrilojilojilZTilZDilZDilojilojilZfilojilojilZTilZDilZDilZDilZDilZ0g4paI4paI4pWU4pWQ4pWQ4pWQ4pWQ4pWd4paI4paI4paI4paI4pWXICDilojilojilZHilZrilZDilZDilojilojilZTilZDilZDilZ0K4paI4paI4paI4paI4paI4paI4paI4pWR4paI4paI4pWRICDilojilojilojilZfilojilojilojilojilojilZcgIOKWiOKWiOKVlOKWiOKWiOKVlyDilojilojilZEgICDilojilojilZEK4paI4paI4pWU4pWQ4pWQ4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWU4pWQ4pWQ4pWdICDilojilojilZHilZrilojilojilZfilojilojilZEgICDilojilojilZEK4paI4paI4pWRICDilojilojilZHilZrilojilojilojilojilojilojilZTilZ3ilojilojilojilojilojilZfilojilojilZEg4pWa4paI4paI4paI4paI4pWRICAg4paI4paI4pWRCuKVmuKVkOKVnSAg4pWa4pWQ4pWdIOKVmuKVkOKVkOKVkOKVkOKVkOKVnSDilZrilZDilZDilZDilZDilZDilZDilZ3ilZrilZDilZ0gIOKVmuKVkOKVkOKVkOKVnSAgIOKVmuKVkOKVnQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0="
+$b64Banner = "PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrilojilojilojilZcgICDilojilojilojilZfilojilojilZcgIOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVl+KWiOKWiOKVlwrilojilojilojilojilZcg4paI4paI4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICDilZrilZDilZDilojilojilZTilZDilZDilZ3ilojilojilZEK4paI4paI4pWU4paI4paI4paI4paI4pWU4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICAgICDilojilojilZEgICDilojilojilZEK4paI4paI4pWR4pWa4paI4paI4pWU4pWd4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWRICAgICDilojilojilZEgICDilojilojilZEK4paI4paI4pWRIOKVmuKVkOKVnSDilojilojilZHilZrilojilojilojilojilojilojilZTilZ3ilojilojilojilojilojilojilojilZfilojilojilZEgICDilojilojilZEK4pWa4pWQ4pWdICAgICDilZrilZDilZ0g4pWa4pWQ4pWQ4pWQ4pWQ4pWQ4pWdIOKVmuKVkOKVkOKVkOKVkOKVkOKVkOKVneKVmuKVkOKVnSAgIOKVmuKVkOKVnQoKIOKWiOKWiOKWiOKWiOKWiOKVlyAg4paI4paI4paI4paI4paI4paI4pWXIOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVl+KWiOKWiOKWiOKVlyAgIOKWiOKWiOKVl+KWiOKWiOKWiOKWiOKWiOKWiOKWiOKWiOKVlwrilojilojilZTilZDilZDilojilojilZfilojilojilZTilZDilZDilZDilZDilZ0g4paI4paI4pWU4pWQ4pWQ4pWQ4pWQ4pWd4paI4paI4paI4pWXICDilojilojilZHilZrilZDilZDilojilojilZTilZDilZDilZ0K4paI4paI4paI4paI4paI4paI4paI4pWR4paI4paI4pWRICDilojilojilojilZfilojilojilojilojilojilZcgIOKWiOKWiOKVlOKWiOKWiOKVlyDilojilojilZEgICDilojilojilZEK4paI4paI4pWU4pWQ4pWQ4paI4paI4pWR4paI4paI4pWRICAg4paI4paI4pWR4paI4paI4pWU4pWQ4pWQ4pWdICDilojilojilZHilZrilojilojilZfilojilojilZEgICDilojilojilZEK4paI4paI4pWRICDilojilojilZHilZrilojilojilojilojilojilojilZTilZ3ilojilojilojilojilojilZfilojilojilZEg4pWa4paI4paI4paI4paI4pWRICAg4paI4paI4pWRCuKVmuKVkOKVnSAg4pWa4pWQ4pWdIOKVmuKVkOKVkOKVkOKVkOKVkOKVnSDilZrilZDilZDilZDilZDilZDilZDilZ3ilZrilZDilZ0g4pWa4pWQ4pWQ4pWQ4pVnSAgIOKVmuKVkOKVnQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0="
 $mainBanner = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64Banner))
 
 Write-Host $mainBanner -ForegroundColor Cyan
 Write-Host "  ANTIGRAVITY LIVE DESKTOP VISUALIZER ACTIVE (SESSION 1)" -ForegroundColor Yellow
-Write-Host "  Version 10.0.0 — Adaptive Collaborative Swarm (7-Window Max Architecture)" -ForegroundColor Cyan
+Write-Host "  Version 10.0.0 - Adaptive Collaborative Swarm (7-Window Max Architecture)" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Spawn 7th Dedicated Window: ANTIGRAVITY SWARM BLACKBOARD
-$bbScript = @"
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-Clear-Host
-`$host.UI.RawUI.WindowTitle = 'ANTIGRAVITY SWARM BLACKBOARD (LIVE STREAM)'
-Write-Host '==========================================================' -ForegroundColor Cyan
-Write-Host '   A N T I G R A V I T Y   S W A R M   B L A C K B O A R D  ' -ForegroundColor Yellow
-Write-Host '   Centralized Communication & Traffic Controller Hub (v10) ' -ForegroundColor Cyan
-Write-Host '==========================================================' -ForegroundColor Cyan
-Write-Host ''
-`$bbFile = '$BBQueueFile'
-`$lastCount = 0
-while (`$true) {
-    if (Test-Path `$bbFile) {
-        try {
-            `$raw = Get-Content `$bbFile -Raw -ErrorAction SilentlyContinue
-            if (`$raw) {
-                `$items = `$raw | ConvertFrom-Json -ErrorAction SilentlyContinue
-                if (`$items -and `$items.Count -gt `$lastCount) {
-                    for (`$j = `$lastCount; `$j -lt `$items.Count; `$j++) {
-                        `$msg = `$items[`$j]
-                        `$ts = `$msg.timestamp
-                        `$wId = `$msg.worker_id
-                        `$mType = `$msg.msg_type
-                        `$txt = `$msg.content
-                        
-                        Write-Host "[`$ts] [`$wId] [`$mType]" -ForegroundColor Green -NoNewline
-                        Write-Host " -> `$txt" -ForegroundColor Yellow
-                    }
-                    `$lastCount = `$items.Count
-                }
-            }
-        } catch {}
-    }
-    Start-Sleep -Milliseconds 500
+# Auto-Spawn 7th Dedicated Window: ANTIGRAVITY SWARM BLACKBOARD
+$bbScriptPath = Join-Path $PSScriptRoot "launch_blackboard_window.ps1"
+if (!(Test-Path $bbScriptPath)) {
+    $bbScriptPath = "C:\Users\HP LAPTOP 15s\.gemini\antigravity-ide\scratch\launch_blackboard_window.ps1"
 }
-"@
-
-$bbBytes = [System.Text.Encoding]::Unicode.GetBytes($bbScript)
-$bbEncoded = [Convert]::ToBase64String($bbBytes)
-Start-Process powershell.exe -ArgumentList "-NoExit", "-EncodedCommand", $bbEncoded
+if (Test-Path $bbScriptPath) {
+    Start-Process powershell.exe -ArgumentList "-NoExit", "-File", "`"$bbScriptPath`""
+}
 
 # Skip past tasks already in queue on startup
 $LastProcessedCount = 0
